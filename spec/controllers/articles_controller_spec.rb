@@ -41,4 +41,27 @@ RSpec.describe ArticlesController, type: :controller do
 
     end
   end
+
+  describe "#show" do
+    
+    it "should return success responds" do
+      get :show, params: {id: 1}
+      expect(response).to  have_http_status(:ok)
+    end
+
+    it "should return a proper JSON object" do 
+      #pp json # => impime la variable
+      article = create :article
+      get :show, params:{id: article.id}
+      pp json_data
+      pp article
+      expect(json_data['attributes']).to eq({
+        "title" => article.title,
+        "content" => article.content,
+        "slug" => article.slug  
+      })
+    end
+    
+  end
+  
 end
