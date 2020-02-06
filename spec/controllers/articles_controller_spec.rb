@@ -11,9 +11,9 @@ RSpec.describe ArticlesController, type: :controller do
 
     it "should return a proper JSON object" do 
       #pp json # => impime la variable
-      articles = create_list :article, 2
+      create_list :article, 2
       subject
-      articles.each.with_index do |article, index|
+      Article.recent.each.with_index do |article, index|
         expect(json_data[index]['attributes']).to  eq(
           {
             "title" => article.title,
@@ -22,6 +22,14 @@ RSpec.describe ArticlesController, type: :controller do
           }
         )
       end
+    end
+
+    it "should return articles in reverse order" do
+      first_article = create :article
+      second_article = create :article
+      subject
+      expect(json_data.first['id']).to  eq(second_article.id.to_s)
+      expect(json_data.last['id']).to  eq(first_article.id.to_s)
     end
   end
 end
