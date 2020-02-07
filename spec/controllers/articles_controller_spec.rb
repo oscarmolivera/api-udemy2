@@ -10,7 +10,6 @@ RSpec.describe ArticlesController, type: :controller do
     end
 
     it "should return a proper JSON object" do 
-      #pp json # => impime la variable
       create_list :article, 2
       subject
       Article.recent.each.with_index do |article, index|
@@ -53,8 +52,8 @@ RSpec.describe ArticlesController, type: :controller do
       #pp json # => impime la variable
       article = create :article
       get :show, params:{id: article.id}
-      pp json_data
-      pp article
+      json_data
+      article
       expect(json_data['attributes']).to eq({
         "title" => article.title,
         "content" => article.content,

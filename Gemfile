@@ -14,6 +14,7 @@ gem 'factory_bot_rails', '~> 5.1', '>= 5.1.1'
 gem 'jsonapi.rb'
 gem 'kaminari', '~> 1.1', '>= 1.1.1'
 gem 'octokit', '~> 4.16'
+gem 'figaro', '~> 1.1', '>= 1.1.1'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.7'
 # Use Redis adapter to run Action Cable in production
