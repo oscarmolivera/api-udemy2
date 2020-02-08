@@ -1,9 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe AccessToken, type: :model do
+  let(:user) {create :user, id: 1}
   describe "#validations" do
-    
-    let(:user) {create :user, id: 1}
     let(:access_token) {create :access_token, user_id: user.id}
 
     it "should have a valid factory" do
@@ -33,6 +32,11 @@ RSpec.describe AccessToken, type: :model do
       user = create :user
       expect{user.create_access_token}.to change{AccessToken.count()}.by(1)
       expect(user.build_access_token).to  be_valid
+    end
+
+    it "should create the token only once" do
+      expect{ user.create_access_token }.to change{ AccessToken.count }.by(1)
+      expect(user.build_access_token).to be_valid
     end
   end
   
