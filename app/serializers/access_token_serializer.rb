@@ -1,4 +1,4 @@
 class AccessTokenSerializer
   include FastJsonapi::ObjectSerializer
-  attributes :token
+  attributes  :token
 end
