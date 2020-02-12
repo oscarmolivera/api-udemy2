@@ -10,6 +10,9 @@ class ArticlesController < ApplicationController
     render json: serializer.new(Article.find_by(id: params[:id]))
   end
 
+  def create
+  end
+
   private
     def serializer
       ArticleSerializer

@@ -28,7 +28,7 @@ class ApplicationController < ActionController::API
         "title" =>  "Authentication code is invalid",
         "detail" => "You must provide valid code in order to exchange it for token."
       }
-      render json: {"errors":[error]}, status: 401
+      render json: {errors: error}, status: 401
     end
 
     def authorization_error
