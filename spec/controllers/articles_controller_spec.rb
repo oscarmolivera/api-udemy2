@@ -71,11 +71,11 @@ RSpec.describe ArticlesController, type: :controller do
       it_behaves_like "forbidden_requests"
     end#context
 
-    context 'when authorized and' do
+    context 'when authorized and' do # _a
       let(:user) { create :user }
       let(:access_token) { user.create_access_token }
       before {request.headers['authorization'] = "Bearer #{access_token.token}"}
-      context 'when invalid parameters are provided' do
+      context 'when invalid parameters are provided' do # _b
         let(:invalid_attributes) do 
           {
             data: {
@@ -117,6 +117,36 @@ RSpec.describe ArticlesController, type: :controller do
           )
         end
       end#context_b
+
+      context 'when valid parameters are provided' do # _c
+        let(:valid_attributes) do 
+          {
+            "data" => {
+              "attributes" => {
+                "title" => "This is a Article Title2",
+                "content" => "...part of the article content...",
+                "slug" => "slug-for-the-article"
+              }
+            }
+          }
+        end
+        subject {post :create, params: valid_attributes}
+        it "should responds 201 access code" do
+          subject
+          expect(response).to have_http_status(201)
+        end
+
+        it "should responds a proper json article object." do
+          subject
+          expect(json_data['attributes']).to include( 
+            valid_attributes['data']['attributes'] 
+          )
+        end
+
+        it "should save the article in DB" do
+          expect{subject}.to change{Article.count()}.by(1)
+        end
+      end#context_c
     end#context_a
 
   end#describe_CREATE
