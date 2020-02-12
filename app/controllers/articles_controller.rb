@@ -11,11 +11,20 @@ class ArticlesController < ApplicationController
   end
 
   def create
+    article = Article.new(article_params)
+    if article.valid?
+    else
+      render jsonapi_errors: article.errors, status: :unprocessable_entity
+    end
   end
 
   private
     def serializer
       ArticleSerializer
+    end
+
+    def article_params
+      ActionController::Parameters.new
     end
 
 end

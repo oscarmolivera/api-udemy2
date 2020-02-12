@@ -71,5 +71,53 @@ RSpec.describe ArticlesController, type: :controller do
       it_behaves_like "forbidden_requests"
     end#context
 
+    context 'when authorized and' do
+      let(:user) { create :user }
+      let(:access_token) { user.create_access_token }
+      before {request.headers['authorization'] = "Bearer #{access_token.token}"}
+      context 'when invalid parameters are provided' do
+        let(:invalid_attributes) do 
+          {
+            data: {
+              attributes: {
+                title: '',
+                content: ''
+              }
+            }
+          }
+        end
+        subject {post :create, params: invalid_attributes}
+        it "should responds a 422 UE code" do
+          subject
+          expect(response).to have_http_status(422)
+        end
+  
+        it " should responds a proper Json error object" do
+          subject
+          expect(json['errors']).to include(
+            {
+              "code"=>"blank",
+              "detail"=>"Title can't be blank",
+              "source"=>{"pointer"=>"/data/attributes/title"},
+              "status"=>"422",
+              "title"=>"Unprocessable Entity"},
+            {
+              "code"=>"blank",
+              "detail"=>"Content can't be blank",
+              "source"=>{"pointer"=>"/data/attributes/content"},
+              "status"=>"422",
+              "title"=>"Unprocessable Entity"},
+            {
+              "code"=>"blank",
+              "detail"=>"Slug can't be blank",
+              "source"=>{"pointer"=>"/data/attributes/slug"},
+              "status"=>"422",
+              "title"=>"Unprocessable Entity"
+            }
+          )
+        end
+      end#context_b
+    end#context_a
+
   end#describe_CREATE
 end
