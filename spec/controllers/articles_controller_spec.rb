@@ -40,43 +40,44 @@ RSpec.describe ArticlesController, type: :controller do
   end
 
   describe '#show' do
-    it "should return success responds" do
-      get :show, params: {id: 1}
-      expect(response).to  have_http_status(:ok)
+    let(:article) { create :article }
+    subject { get :show, params: { id: article.id } }
+
+    it 'should return success response' do
+      subject
+      expect(response).to have_http_status(:ok)
     end
 
-    it "should return a proper JSON object" do 
-      #pp json # => impime la variable
-      article = create :article
-      get :show, params:{id: article.id}
-      json_data
-      article
+    it 'should return proper json' do
+      subject
       expect(json_data['attributes']).to eq({
-        "title" => article.title,
-        "content" => article.content,
-        "slug" => article.slug  
+          "title" => article.title,
+          "content" => article.content,
+          "slug" => article.slug
       })
     end
-
   end
 
   describe '#create' do
-    subject {post :create}
-    context 'when no code is provided' do
-      it_behaves_like "forbidden_requests"
-    end#context
+    let(:user) { create :user }
+    let(:access_token) { user.create_access_token }
 
-    context 'when provided code is invalid' do
-      before {request.headers['authorization'] = "invalid_token"}
-      it_behaves_like "forbidden_requests"
-    end#context
+    subject { post :create }
 
-    context 'when authorized and' do # _a
-      let(:user) { create :user }
-      let(:access_token) { user.create_access_token }
-      before {request.headers['authorization'] = "Bearer #{access_token.token}"}
-      context 'when invalid parameters are provided' do # _b
-        let(:invalid_attributes) do 
+    context 'when no code provided' do
+      it_behaves_like 'forbidden_requests'
+    end
+
+    context 'when invalid code provided' do
+      before { request.headers['authorization'] = 'Invalid token' }
+      it_behaves_like 'forbidden_requests'
+    end
+
+    context 'when authorized' do
+      before { request.headers['authorization'] = "Bearer #{access_token.token}" }
+
+      context 'when invalid parameters provided' do
+        let(:invalid_attributes) do
           {
             data: {
               attributes: {
@@ -86,13 +87,15 @@ RSpec.describe ArticlesController, type: :controller do
             }
           }
         end
-        subject {post :create, params: invalid_attributes}
-        it "should responds a 422 UE code" do
+
+        subject { post :create, params: invalid_attributes }
+
+        it 'should return 422 status code' do
           subject
-          expect(response).to have_http_status(422)
+          expect(response).to have_http_status(:unprocessable_entity)
         end
-  
-        it " should responds a proper Json error object" do
+
+        it 'should return proper error json' do
           subject
           expect(json['errors']).to include(
             {
@@ -100,13 +103,15 @@ RSpec.describe ArticlesController, type: :controller do
               "detail"=>"Title can't be blank",
               "source"=>{"pointer"=>"/data/attributes/title"},
               "status"=>"422",
-              "title"=>"Unprocessable Entity"},
+              "title"=>"Unprocessable Entity"
+            },
             {
               "code"=>"blank",
               "detail"=>"Content can't be blank",
               "source"=>{"pointer"=>"/data/attributes/content"},
               "status"=>"422",
-              "title"=>"Unprocessable Entity"},
+              "title"=>"Unprocessable Entity"
+            },
             {
               "code"=>"blank",
               "detail"=>"Slug can't be blank",
@@ -116,63 +121,75 @@ RSpec.describe ArticlesController, type: :controller do
             }
           )
         end
-      end#context_b
+      end
 
-      context 'when valid parameters are provided' do # _c
-        let(:valid_attributes) do 
+      context 'when success request sent' do
+        before { request.headers['authorization'] = "Bearer #{access_token.token}" }
+
+        let(:valid_attributes) do
           {
-            "data" => {
-              "attributes" => {
-                "title" => "This is a Article Title2",
-                "content" => "...part of the article content...",
-                "slug" => "slug-for-the-article"
+            'data' => {
+              'attributes' => {
+                'title' => 'Awesome article',
+                'content' => 'Super content',
+                'slug' => 'awesome-article'
               }
             }
           }
         end
-        subject {post :create, params: valid_attributes}
-        it "should responds 201 access code" do
+
+        subject { post :create, params: valid_attributes }
+
+        it 'should have 201 status code' do
           subject
-          expect(response).to have_http_status(201)
+          expect(response).to have_http_status(:created)
         end
 
-        it "should responds a proper json article object." do
+        it 'should have proper json body' do
           subject
-          expect(json_data['attributes']).to include( 
-            valid_attributes['data']['attributes'] 
+          expect(json_data['attributes']).to include(
+            valid_attributes['data']['attributes']
           )
         end
 
-        it "should save the article in DB" do
-          expect{subject}.to change{Article.count()}.by(1)
+        it 'should create the article' do
+          expect{ subject }.to change{ Article.count }.by(1)
         end
-      end#context_c
-    end#context_a
-
-  end#describe_CREATE
+      end
+    end
+  end
 
   describe '#update' do
-    subject {put :update, params: {id: 1}}
-    
-    context 'when no code is provided' do
-      it_behaves_like "forbidden_requests"
-    end#context
+    let(:user) { create :user }
+    let(:article) { create :article, user: user }
+    let(:access_token) { user.create_access_token }
 
-    context 'when provided code is invalid' do
-      before {request.headers['authorization'] = "invalid_token"}
-      it_behaves_like "forbidden_requests"
-    end#context
+    subject { patch :update, params: { id: article.id } }
 
-    context 'when authorized and' do # _f
-      let(:user) { create :user }
-      let(:article) { create :article}
-      let(:access_token) { user.create_access_token }
-      before {request.headers['authorization'] = "Bearer #{access_token.token}"}
-      
+    context 'when no code provided' do
+      it_behaves_like 'forbidden_requests'
+    end
 
-      context 'when invalid parameters are provided' do #_g
+    context 'when invalid code provided' do
+      before { request.headers['authorization'] = 'Invalid token' }
+      it_behaves_like 'forbidden_requests'
+    end
 
-        let(:invalid_attributes) do 
+    context 'when trying to update not owned article' do
+      let(:other_user) { create :user }
+      let(:other_article) { create :article, user: other_user }
+
+      subject { patch :update, params: { id: other_article.id } }
+      before { request.headers['authorization'] = "Bearer #{access_token.token}" }
+
+      it_behaves_like 'forbidden_requests'
+    end
+
+    context 'when authorized' do
+      before { request.headers['authorization'] = "Bearer #{access_token.token}" }
+
+      context 'when invalid parameters provided' do
+        let(:invalid_attributes) do
           {
             data: {
               attributes: {
@@ -186,7 +203,7 @@ RSpec.describe ArticlesController, type: :controller do
         subject do
           patch :update, params: invalid_attributes.merge(id: article.id)
         end
-        
+
         it 'should return 422 status code' do
           subject
           expect(response).to have_http_status(:unprocessable_entity)
@@ -211,17 +228,18 @@ RSpec.describe ArticlesController, type: :controller do
             }
           )
         end
+      end
 
-      end#context_g
+      context 'when success request sent' do
+        before { request.headers['authorization'] = "Bearer #{access_token.token}" }
 
-      context 'when valid parameters are provided' do # _h
-        let(:valid_attributes) do 
+        let(:valid_attributes) do
           {
-            "data" => {
-              "attributes" => {
-                "title" => "This is a Article Title2",
-                "content" => "...part of the article content...",
-                "slug" => "slug-for-the-article"
+            'data' => {
+              'attributes' => {
+                'title' => 'Awesome article',
+                'content' => 'Super content',
+                'slug' => 'awesome-article'
               }
             }
           }
@@ -231,15 +249,15 @@ RSpec.describe ArticlesController, type: :controller do
           patch :update, params: valid_attributes.merge(id: article.id)
         end
 
-        it "should responds 200 access code" do
+        it 'should have 200 status code' do
           subject
-          expect(response).to have_http_status(200)
+          expect(response).to have_http_status(:ok)
         end
 
-        it "should responds a proper json article object." do
+        it 'should have proper json body' do
           subject
-          expect(json_data['attributes']).to include( 
-            valid_attributes['data']['attributes'] 
+          expect(json_data['attributes']).to include(
+            valid_attributes['data']['attributes']
           )
         end
 
@@ -249,10 +267,7 @@ RSpec.describe ArticlesController, type: :controller do
             valid_attributes['data']['attributes']['title']
           )
         end
-        
-      end#context_h
-
-    end#context_f
-   
+      end
+    end
   end
 end
