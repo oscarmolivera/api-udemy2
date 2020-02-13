@@ -18,6 +18,14 @@ class ArticlesController < ApplicationController
       render jsonapi_errors: article.errors, status: :unprocessable_entity 
   end
 
+  def update
+    article = Article.find(params[:id])
+    article.update!(article_params)
+    render json: serializer.new(article), status: :ok
+  rescue
+    render jsonapi_errors: article.errors, status: :unprocessable_entity 
+  end
+
   private
     def serializer
       ArticleSerializer

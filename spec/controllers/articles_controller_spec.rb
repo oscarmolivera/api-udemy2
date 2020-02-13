@@ -150,4 +150,109 @@ RSpec.describe ArticlesController, type: :controller do
     end#context_a
 
   end#describe_CREATE
+
+  describe '#update' do
+    subject {put :update, params: {id: 1}}
+    
+    context 'when no code is provided' do
+      it_behaves_like "forbidden_requests"
+    end#context
+
+    context 'when provided code is invalid' do
+      before {request.headers['authorization'] = "invalid_token"}
+      it_behaves_like "forbidden_requests"
+    end#context
+
+    context 'when authorized and' do # _f
+      let(:user) { create :user }
+      let(:article) { create :article}
+      let(:access_token) { user.create_access_token }
+      before {request.headers['authorization'] = "Bearer #{access_token.token}"}
+      
+
+      context 'when invalid parameters are provided' do #_g
+
+        let(:invalid_attributes) do 
+          {
+            data: {
+              attributes: {
+                title: '',
+                content: ''
+              }
+            }
+          }
+        end
+
+        subject do
+          patch :update, params: invalid_attributes.merge(id: article.id)
+        end
+        
+        it 'should return 422 status code' do
+          subject
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it 'should return proper error json' do
+          subject
+          expect(json['errors']).to include(
+            {
+              "code"=>"blank",
+              "detail"=>"Title can't be blank",
+              "source"=>{"pointer"=>"/data/attributes/title"},
+              "status"=>"422",
+              "title"=>"Unprocessable Entity"
+            },
+            {
+              "code"=>"blank",
+              "detail"=>"Content can't be blank",
+              "source"=>{"pointer"=>"/data/attributes/content"},
+              "status"=>"422",
+              "title"=>"Unprocessable Entity"
+            }
+          )
+        end
+
+      end#context_g
+
+      context 'when valid parameters are provided' do # _h
+        let(:valid_attributes) do 
+          {
+            "data" => {
+              "attributes" => {
+                "title" => "This is a Article Title2",
+                "content" => "...part of the article content...",
+                "slug" => "slug-for-the-article"
+              }
+            }
+          }
+        end
+
+        subject do
+          patch :update, params: valid_attributes.merge(id: article.id)
+        end
+
+        it "should responds 200 access code" do
+          subject
+          expect(response).to have_http_status(200)
+        end
+
+        it "should responds a proper json article object." do
+          subject
+          expect(json_data['attributes']).to include( 
+            valid_attributes['data']['attributes'] 
+          )
+        end
+
+        it 'should update the article' do
+          subject
+          expect(article.reload.title).to eq(
+            valid_attributes['data']['attributes']['title']
+          )
+        end
+        
+      end#context_h
+
+    end#context_f
+   
+  end
 end
