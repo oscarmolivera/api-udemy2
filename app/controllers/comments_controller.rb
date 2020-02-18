@@ -6,9 +6,12 @@ class CommentsController < ApplicationController
   before_action :load_article
 
   def index
-    @comments = Comment.all
+    comments = @article.comments
 
-    render json: @comments
+    render json: serializer.new(comments
+      .page(params[:page])
+      .per(params[:per_page])
+    )
   end
 
   def create
