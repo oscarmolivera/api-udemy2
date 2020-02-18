@@ -1,7 +1,8 @@
 class ApplicationController < ActionController::API
   class AuthorizationError < StandardError; end
 
-  rescue_from UserAuthenticator::AuthenticatorError, with: :authentication_error
+  rescue_from UserAuthenticator::Oauth::AuthenticatorError, with: :authentication_oauth_error
+  rescue_from UserAuthenticator::Inexistant::AuthenticationError, with: :authentication_inexistant_error
   rescue_from AuthorizationError, with: :authorization_error
 
   before_action :authorize!
@@ -21,24 +22,38 @@ class ApplicationController < ActionController::API
     @current_user = access_token&.user
   end
 
-  def authentication_error
-    error = {
-      "status" => "401",
-      "source" => { "pointer" => "/code" },
-      "title" =>  "Authentication code is invalid",
-      "detail" => "You must provide valid code in order to exchange it for token."
-    }
-    render json: {errors: error}, status: 401
+  def authentication_inexistant_error
+    error =
+      {
+        'status' => '401',
+        'source' => { 'pointer' => '/data/attributes/password' },
+        'title' => 'Invalid login or password',
+        'detail' => 
+        'You must provide valid credentials in order to exchange it for token.'
+      }
+    render json: { errors: error }, status: 401
+  end
+
+  def authentication_oauth_error
+    error =
+      {
+        'status' => '401',
+        'source' => { 'pointer' => '/code' },
+        'title' => 'Autentication code is invalid',
+        'detail' =>
+        'You must provide a valid code in order to exchange it for a token.'
+      }
+    render json: { errors: error }, status: 401
   end
 
   def authorization_error
-    error = {
-      "status" => "403", 
-      "source" => "{'pointer' => '/headers/authorization'}", 
-      "title" => "Not Authorized", 
-      "details" => "No se tiene permiso para realizar la acción." 
+    error = 
+    {
+      'status' => '403',
+      'source' => "{'pointer' => '/headers/authorization'}",
+      'title' => 'Not Authorized',
+      'details' => 'No se tiene permiso para realizar la acción.'
     }
-    render json: {errors: error}, status: :forbidden
+    render json: { errors: error }, status: :forbidden
   end
-
 end
