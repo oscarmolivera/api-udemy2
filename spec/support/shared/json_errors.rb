@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-shared_examples_for 'unauthorized_inexistant_requests' do
+shared_examples_for 'unauthorized_principal_requests' do
   let(:authentication_error) do
     {
       'status' => '401',

@@ -4,7 +4,7 @@ RSpec.describe AccessTokensController, type: :controller do
   describe 'POST #create' do
     context 'when no auth_data is provided' do
       subject { post :create }
-      it_behaves_like 'unauthorized_inexistant_requests'
+      it_behaves_like 'unauthorized_principal_requests'
     end
 
     context 'when invalid code provided' do

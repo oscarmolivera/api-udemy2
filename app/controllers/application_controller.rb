@@ -2,7 +2,7 @@ class ApplicationController < ActionController::API
   class AuthorizationError < StandardError; end
 
   rescue_from UserAuthenticator::Oauth::AuthenticatorError, with: :authentication_oauth_error
-  rescue_from UserAuthenticator::Inexistant::AuthenticationError, with: :authentication_inexistant_error
+  rescue_from UserAuthenticator::Principal::AuthenticationError, with: :authentication_principal_error
   rescue_from AuthorizationError, with: :authorization_error
 
   before_action :authorize!
@@ -22,7 +22,7 @@ class ApplicationController < ActionController::API
     @current_user = access_token&.user
   end
 
-  def authentication_inexistant_error
+  def authentication_principal_error
     error =
       {
         'status' => '401',
