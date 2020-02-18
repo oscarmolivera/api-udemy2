@@ -2,15 +2,14 @@ require 'rails_helper'
 
 RSpec.describe AccessTokensController, type: :controller do
   describe 'POST #create' do
-    
     context 'when no code provided' do
       subject { post :create }
-      it_behaves_like "unauthorized_requests"
+      it_behaves_like 'unauthorized_requests'
     end
 
     context 'when invalid code provided' do
       let(:github_error) {
-        double("Sawyer::Resource", error: "bad_verification_code")
+        double('Sawyer::Resource', error: 'bad_verification_code')
       }
 
       before do
@@ -20,7 +19,7 @@ RSpec.describe AccessTokensController, type: :controller do
 
       subject { post :create, params: { code: 'invalid_code' } }
 
-      it_behaves_like "unauthorized_requests"
+      it_behaves_like 'unauthorized_requests'
     end
 
     context 'when success request' do
@@ -52,7 +51,7 @@ RSpec.describe AccessTokensController, type: :controller do
         expect{ subject }.to change{ User.count }.by(1)
         user = User.find_by(login: 'jsmith1')
         expect(json_data['attributes']).to eq(
-          { 'token' => user.access_token.token}
+          'token' => user.access_token.token
         )
       end
     end

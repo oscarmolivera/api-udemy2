@@ -1,6 +1,9 @@
-class CommentsController < ApplicationController
+# frozen_string_literal: true
 
+# Controller for Comment model
+class CommentsController < ApplicationController
   skip_before_action :authorize!, only: [:index]
+  before_action :load_article
 
   def index
     @comments = Comment.all
@@ -9,18 +12,29 @@ class CommentsController < ApplicationController
   end
 
   def create
-    @comment = Comment.new(comment_params)
-
+    @comment = @article.comments.build(
+      comment_params.merge(user: current_user)
+    )
     if @comment.save
-      render json: @comment, status: :created, location: @comment
+      render json: serializer.new(@comment), status: :created, location: @article
     else
-      render json: @comment.errors, status: :unprocessable_entity
+      render jsonapi_errors: @comment.errors, status: :unprocessable_entity
     end
   end
 
   private
-    # Only allow a trusted parameter "white list" through.
-    def comment_params
-      params.require(:comment).permit(:content, :article_id, :user_id)
-    end
+
+  def load_article
+    @article = Article.find(params[:article_id])
+  end
+
+  # Only allow a trusted parameter "white list" through.
+  def comment_params
+    params.require(:data).require(:attributes).permit(:content) ||
+      ActionController::Parameters.new
+  end
+
+  def serializer
+    CommentSerializer
+  end
 end
