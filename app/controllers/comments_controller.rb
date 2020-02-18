@@ -18,11 +18,10 @@ class CommentsController < ApplicationController
     @comment = @article.comments.build(
       comment_params.merge(user: current_user)
     )
-    if @comment.save
-      render json: serializer.new(@comment), status: :created, location: @article
-    else
-      render jsonapi_errors: @comment.errors, status: :unprocessable_entity
-    end
+    @comment.save!
+    render json: serializer.new(@comment), status: :created, location: @article
+  rescue 
+    render jsonapi_errors: @comment.errors, status: :unprocessable_entity
   end
 
   private

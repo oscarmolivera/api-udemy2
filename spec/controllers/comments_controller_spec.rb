@@ -106,7 +106,7 @@ RSpec.describe CommentsController, type: :controller do
         end
 
         it 'should create the comment' do
-          expect { subject }.to change { Comment.count }.by(1)
+          expect { subject }.to change { article.comments.count }.by(1)
         end
       end
     end
