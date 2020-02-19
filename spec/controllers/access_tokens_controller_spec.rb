@@ -2,6 +2,17 @@ require 'rails_helper'
 
 RSpec.describe AccessTokensController, type: :controller do
   describe 'POST #create' do
+    let(:params) do
+      {
+        'data': {
+          'attributes': {
+            'login': 'user_login',
+            'password': 'user_password'
+          }
+        }
+      }
+    end
+
     context 'when no auth_data is provided' do
       subject { post :create }
       it_behaves_like 'unauthorized_principal_requests'
@@ -23,7 +34,7 @@ RSpec.describe AccessTokensController, type: :controller do
       it_behaves_like 'unauthorized_oauth_requests'
     end
 
-    context 'when success request' do
+    context 'when vaild code is provided' do
       let(:user_data) do
         {
           login: 'jsmith1',
@@ -51,6 +62,40 @@ RSpec.describe AccessTokensController, type: :controller do
       it 'should return proper json body' do
         expect{ subject }.to change{ User.count }.by(1)
         user = User.find_by(login: 'jsmith1')
+        expect(json_data['attributes']).to eq(
+          'token' => user.access_token.token
+        )
+      end
+    end
+
+    context 'when invalid login is provided' do
+      let(:user) { create :user, login: 'INVALID', password: 'user_password' }
+      subject { post :create, params: params }
+      before { user }
+
+      it_behaves_like 'unauthorized_principal_requests'
+    end
+
+    context 'when invalid password is provided' do
+      let(:user) { create :user, login: 'user_login', password: 'INVALID' }
+      subject { post :create, params: params }
+      before { user }
+
+      it_behaves_like 'unauthorized_principal_requests'
+    end
+
+    context 'when valid credentials are provided' do
+      let(:user) { create :user, login: 'user_login', password: 'user_password' }
+      subject { post :create, params: params }
+      before { user }
+
+      it 'should return 201 status code' do
+        subject
+        expect(response).to have_http_status(:created)
+      end
+
+      it 'should return proper json body' do
+        subject
         expect(json_data['attributes']).to eq(
           'token' => user.access_token.token
         )

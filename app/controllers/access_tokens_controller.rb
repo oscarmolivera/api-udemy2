@@ -22,6 +22,10 @@ class AccessTokensController < ApplicationController
   end
 
   def authentication_params
-    params.permit(:code).to_h.symbolize_keys
+    (principal_params || params.permit(:code)).to_h.symbolize_keys
+  end
+
+  def principal_params
+    params.dig(:data, :attributes)&.permit(:login, :password)
   end
 end
