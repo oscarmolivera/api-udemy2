@@ -16,13 +16,13 @@ RSpec.describe RegistrationsController, type: :controller do
       end
 
       it 'should not create an user' do
-        expect{ subject }.not_to change{User.count}
+        expect { subject }.not_to change { User.count }
       end
 
       it 'should return code 422' do
         subject
-        expect(response).to  have_http_status(422)
-      end 
+        expect(response).to have_http_status(422)
+      end
 
       it 'should return error messages in response body' do
         subject
@@ -58,7 +58,8 @@ RSpec.describe RegistrationsController, type: :controller do
       end
       it 'should return HTTP code 201' do
         subject
-        expect(subject).to  have_http_status(201)
+
+        expect(subject).to have_http_status(201)
       end
 
       it 'should create a user' do

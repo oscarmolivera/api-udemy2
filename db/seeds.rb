@@ -3,8 +3,7 @@ user = User.create(
   name: 'seeding user',
   url: 'http://seeding-url.com',
   avatar_url: 'http://gravitar.com/seeding-user',
-  provider: 'Github',
-  encrypted_password: '$2a$12$JCgkfczW74t5DadlSCP9U.s0BGOrCAF8RS7UGOLyOMbY/NtDcoPfW' #user_pwd
+  provider: 'Github'
 )
 (1..25).each_with_index do |article, index|
   Article.create!(

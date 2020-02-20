@@ -8,9 +8,8 @@ class CommentsController < ApplicationController
   def index
     comments = @article.comments
 
-    render json: serializer.new(comments
-      .page(params[:page])
-      .per(params[:per_page])
+    render json: serializer.new(
+      comments.page(params[:page]).per(params[:per_page])
     )
   end
 
@@ -20,7 +19,7 @@ class CommentsController < ApplicationController
     )
     @comment.save!
     render json: serializer.new(@comment), status: :created, location: @article
-  rescue 
+  rescue
     render jsonapi_errors: @comment.errors, status: :unprocessable_entity
   end
 

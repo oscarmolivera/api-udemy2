@@ -2,12 +2,15 @@ require 'rails_helper'
 
 RSpec.describe AccessToken, type: :model do
   describe '#validations' do
+    let(:user) { build :user }
     it 'should have valid factory' do
-
+      expect((build :access_token, user: user)).to be_valid
     end
 
     it 'should validate token' do
-
+      access_token = create :access_token, user: user
+      expect((build :access_token, token: '')).to be_invalid
+      expect((build :access_token, token: access_token.token)).to be_invalid
     end
   end
 
@@ -18,7 +21,7 @@ RSpec.describe AccessToken, type: :model do
 
     it 'should generate uniq token' do
       user = create :user
-      expect{ user.create_access_token }.to change{ AccessToken.count }.by(1)
+      expect { user.create_access_token }.to change { AccessToken.count }.by(1)
       expect(user.build_access_token).to be_valid
     end
 

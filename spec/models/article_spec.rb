@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Article, type: :model do
   describe '#validations' do
     it 'should test that the factory is valid' do
-      expect(build :article).to be_valid
+      expect((build :article)).to be_valid
     end
 
     it 'should validate the presence of the title' do
@@ -36,11 +36,11 @@ RSpec.describe Article, type: :model do
       old_article = create :article
       newer_article = create :article
       expect(described_class.recent).to eq(
-        [ newer_article, old_article ]
+        [newer_article, old_article]
       )
       old_article.update_column :created_at, Time.now
       expect(described_class.recent).to eq(
-        [ old_article, newer_article ]
+        [old_article, newer_article]
       )
     end
   end

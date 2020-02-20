@@ -9,7 +9,7 @@ describe UserAuthenticator::Principal do
       before { user }
 
       it 'should raise an error' do
-        expect{ subject }.to raise_error(
+        expect { subject }.to raise_error(
           UserAuthenticator::Principal::AuthenticationError
         )
         expect(authenticator.user).to be_nil
@@ -32,7 +32,7 @@ describe UserAuthenticator::Principal do
       before { user }
 
       it 'should set the user found in db' do
-        expect { subject }.not_to change{ User.count }
+        expect { subject }.not_to change { User.count }
         expect(authenticator.user).to eq(user)
       end
     end

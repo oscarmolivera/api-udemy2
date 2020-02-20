@@ -9,7 +9,7 @@ class RegistrationsController < ApplicationController
     user.save!
     render json: serializer.new(user), status: :created
   rescue ActiveRecord::RecordInvalid
-    render jsonapi_errors: user.errors, status: :unprocessable_entity 
+    render jsonapi_errors: user.errors, status: :unprocessable_entity
   end
 
   private

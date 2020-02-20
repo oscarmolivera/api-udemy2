@@ -13,11 +13,13 @@ RSpec.describe ArticlesController, type: :controller do
       create_list :article, 2
       subject
       Article.recent.each_with_index do |article, index|
-        expect(json_data[index]['attributes']).to eq({
-          "title" => article.title,
-          "content" => article.content,
-          "slug" => article.slug
-        })
+        expect(json_data[index]['attributes']).to eq(
+          {
+            'title' => article.title,
+            'content' => article.content,
+            'slug' => article.slug
+          }
+        )
       end
     end
 
@@ -49,11 +51,13 @@ RSpec.describe ArticlesController, type: :controller do
 
     it 'should return proper json' do
       subject
-      expect(json_data['attributes']).to eq({
-          "title" => article.title,
-          "content" => article.content,
-          "slug" => article.slug
-      })
+      expect(json_data['attributes']).to eq(
+        {
+          'title' => article.title,
+          'content' => article.content,
+          'slug' => article.slug
+        }
+      )
     end
   end
 
@@ -98,25 +102,25 @@ RSpec.describe ArticlesController, type: :controller do
           subject
           expect(json['errors']).to include(
             {
-              "code"=>"blank",
-              "detail"=>"Title can't be blank",
-              "source"=>{"pointer"=>"/data/attributes/title"},
-              "status"=>"422",
-              "title"=>"Unprocessable Entity"
+              'code' => 'blank',
+              'detail' => "Title can't be blank",
+              'source' => { 'pointer' => '/data/attributes/title' },
+              'status' => '422',
+              'title' => 'Unprocessable Entity'
             },
             {
-              "code"=>"blank",
-              "detail"=>"Content can't be blank",
-              "source"=>{"pointer"=>"/data/attributes/content"},
-              "status"=>"422",
-              "title"=>"Unprocessable Entity"
+              'code' => 'blank',
+              'detail' => "Content can't be blank",
+              'source' => { 'pointer' => '/data/attributes/content' },
+              'status' => '422',
+              'title' => 'Unprocessable Entity'
             },
             {
-              "code"=>"blank",
-              "detail"=>"Slug can't be blank",
-              "source"=>{"pointer"=>"/data/attributes/slug"},
-              "status"=>"422",
-              "title"=>"Unprocessable Entity"
+              'code' => 'blank',
+              'detail' => "Slug can't be blank",
+              'source' => { 'pointer' => '/data/attributes/slug' },
+              'status' => '422',
+              'title' => 'Unprocessable Entity'
             }
           )
         end
@@ -152,7 +156,7 @@ RSpec.describe ArticlesController, type: :controller do
         end
 
         it 'should create the article' do
-          expect{ subject }.to change{ Article.count }.by(1)
+          expect { subject }.to change { Article.count }.by(1)
         end
       end
     end
@@ -212,18 +216,18 @@ RSpec.describe ArticlesController, type: :controller do
           subject
           expect(json['errors']).to include(
             {
-              "code"=>"blank",
-              "detail"=>"Title can't be blank",
-              "source"=>{"pointer"=>"/data/attributes/title"},
-              "status"=>"422",
-              "title"=>"Unprocessable Entity"
+              'code' => 'blank',
+              'detail' => "Title can't be blank",
+              'source' => { 'pointer' => '/data/attributes/title' },
+              'status' => '422',
+              'title' => 'Unprocessable Entity'
             },
             {
-              "code"=>"blank",
-              "detail"=>"Content can't be blank",
-              "source"=>{"pointer"=>"/data/attributes/content"},
-              "status"=>"422",
-              "title"=>"Unprocessable Entity"
+              'code' => 'blank',
+              'detail' => "Content can't be blank",
+              'source' => { 'pointer' => '/data/attributes/content' },
+              'status' => '422',
+              'title' => 'Unprocessable Entity'
             }
           )
         end
@@ -300,7 +304,6 @@ RSpec.describe ArticlesController, type: :controller do
       before { request.headers['authorization'] = "Bearer #{access_token.token}" }
 
       context 'when success request sent' do
-       
         it 'should have 204 status code' do
           subject
           expect(response).to have_http_status(:no_content)
@@ -313,12 +316,9 @@ RSpec.describe ArticlesController, type: :controller do
 
         it 'should remove the article' do
           article
-          expect{subject}.to change{Article.count()}.by(-1)
+          expect { subject }.to change { Article.count }.by(-1)
         end
-    
       end
-  
     end
-
   end
 end

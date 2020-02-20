@@ -67,13 +67,13 @@ RSpec.describe CommentsController, type: :controller do
           subject
           expect(json['errors']).to include(
             {
-              "code"=>"blank",
-              "detail"=>"Content can't be blank",
-              "source"=>{"pointer"=>"/data/attributes/content"},
-              "status"=>"422",
-              "title"=>"Unprocessable Entity"
+              'code' => 'blank',
+              'detail' => "Content can't be blank",
+              'source' => { 'pointer' => '/data/attributes/content' },
+              'status' => '422',
+              'title' => 'Unprocessable Entity'
             }
-            )
+          )
         end
       end
 
@@ -95,7 +95,6 @@ RSpec.describe CommentsController, type: :controller do
           expect(response).to have_http_status(:created)
           expect(response.content_type).to include('application/json')
           expect(response.location).to eq(article_url(article))
-
         end
 
         it 'should have proper json body' do

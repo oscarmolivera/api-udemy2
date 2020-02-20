@@ -6,7 +6,7 @@ shared_examples_for 'unauthorized_principal_requests' do
       'status' => '401',
       'source' => { 'pointer' => '/data/attributes/password' },
       'title' => 'Invalid login or password',
-      'detail' => 
+      'detail' =>
         'You must provide valid credentials in order to exchange it for token.'
     }
   end

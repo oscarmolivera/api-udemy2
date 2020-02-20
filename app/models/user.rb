@@ -4,7 +4,7 @@
 class User < ApplicationRecord
   include BCrypt
 
-  validates :login, presence: true, uniqueness: :true
+  validates :login, presence: true, uniqueness: true
   validates :provider, presence: true
   validates :password, presence: true, if: -> { provider == 'UdemyApiApp' }
 
@@ -17,7 +17,7 @@ class User < ApplicationRecord
   end
 
   def password=(new_password)
-    @password = Password.create(new_password) if !new_password.blank?
+    @password = Password.create(new_password) unless new_password.blank?
     self.encrypted_password = @password
   end
 end

@@ -28,7 +28,7 @@ class ApplicationController < ActionController::API
         'status' => '401',
         'source' => { 'pointer' => '/data/attributes/password' },
         'title' => 'Invalid login or password',
-        'detail' => 
+        'detail' =>
         'You must provide valid credentials in order to exchange it for token.'
       }
     render json: { errors: error }, status: 401
@@ -47,13 +47,13 @@ class ApplicationController < ActionController::API
   end
 
   def authorization_error
-    error = 
-    {
-      'status' => '403',
-      'source' => "{'pointer' => '/headers/authorization'}",
-      'title' => 'Not Authorized',
-      'details' => 'No se tiene permiso para realizar la acción.'
-    }
+    error =
+      {
+        'status' => '403',
+        'source' => "{'pointer' => '/headers/authorization'}",
+        'title' => 'Not Authorized',
+        'details' => 'No se tiene permiso para realizar la acción.'
+      }
     render json: { errors: error }, status: :forbidden
   end
 end

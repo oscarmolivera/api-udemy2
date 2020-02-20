@@ -19,8 +19,8 @@ class ArticlesController < ApplicationController
     article = current_user.articles.build(article_params)
     article.save!
     render json: serializer.new(article), status: :created
-    rescue
-      render jsonapi_errors: article.errors, status: :unprocessable_entity 
+  rescue
+    render jsonapi_errors: article.errors, status: :unprocessable_entity 
   end
 
   def update
