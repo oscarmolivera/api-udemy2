@@ -7,7 +7,7 @@ ruby '2.5.6'
 gem 'rails', '~> 6.0.2', '>= 6.0.2.1'
 
 # Use Puma as the app server
-gem 'puma', '~> 4.1'
+gem 'puma', '~> 4.3'
 gem 'rspec-rails', '~> 3.9'
 gem 'factory_bot_rails', '~> 5.1', '>= 5.1.1'
 gem 'jsonapi.rb'
